@@ -76,3 +76,32 @@
         cb(null,uniqueSuffix + file.originalname);
     }
    });
+
+   //insert model part
+   require("./Models/PdfModel");
+   const PdfSchema = mongoose.model("PdfDetails");
+   const upload = multer({storage});
+
+   app.post("/uploardpdf",upload.single("files"),async(req,res)=>{
+    console.log(res.file);
+    const title = res.body.title;
+    const pdf = res.file.filename;
+    try{
+        await PdfSchema.create({title:title,pdf:pdf})
+    }catch(err){
+        console.log(err);
+        res.status(500).json({error:err.message});
+    
+    }
+});
+
+
+app.get("/getpdf",async(req,res)=>{
+    try{
+        const data = await PdfSchema.find({});
+        res.send({status:200,data:data})
+    }catch(err){
+        console.log(err);
+        res.status(500).json({error:err.message});
+    }
+})
