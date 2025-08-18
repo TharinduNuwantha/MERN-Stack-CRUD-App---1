@@ -12,6 +12,7 @@
     app.use(cors());
     app.use(express.urlencoded({ extended: true }));
     app.use("/userPakaya",router);
+    app.use("/files",express.static("files"));
 
 
     mongoose.connect('mongodb+srv://nuwanthatharindu99:3dkxyDvvgLjWgkZE@cluster0.zhu4kz2.mongodb.net/')
@@ -61,3 +62,17 @@
         
         }
    })
+
+
+   //pdf
+   const multer = require('multer');
+   const storage = multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null,"./files");
+    
+    },
+    filename:function(req,file,cb){
+        const uniqueSuffix  = Data.now();
+        cb(null,uniqueSuffix + file.originalname);
+    }
+   });
