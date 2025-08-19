@@ -66,34 +66,36 @@
 
    //pdf
    const multer = require('multer');
-   const storage = multer.diskStorage({
-    destination:function(req,file,cb){
-        cb(null,"./files");
-    
-    },
-    filename:function(req,file,cb){
-        const uniqueSuffix  = Data.now();
-        cb(null,uniqueSuffix + file.originalname);
-    }
-   });
-
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./files");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now(); // ✅ Correct: "Date.now()"
+    cb(null, uniqueSuffix + file.originalname);
+  }
+});
    //insert model part
    require("./Models/PdfModel");
    const PdfSchema = mongoose.model("PdfDetails");
    const upload = multer({storage});
 
-   app.post("/uploardpdf",upload.single("files"),async(req,res)=>{
-    console.log(res.file);
-    const title = res.body.title;
-    const pdf = res.file.filename;
-    try{
-        await PdfSchema.create({title:title,pdf:pdf})
-    }catch(err){
+// 1. Fix the route path typo and request handling
+app.post("/uploadpdf", upload.single("files"), async (req, res) => {
+    try {
+        console.log(req.file); // uploaded file
+        const title = req.body.title;
+        const pdf = req.file.filename;
+
+        await PdfSchema.create({ title, pdf });
+
+        res.status(200).json({ status: 200, message: "Upload success" });
+    } catch (err) {
         console.log(err);
-        res.status(500).json({error:err.message});
-    
+        res.status(500).json({ error: err.message });
     }
 });
+
 
 
 app.get("/getpdf",async(req,res)=>{
