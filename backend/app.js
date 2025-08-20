@@ -107,3 +107,5 @@ app.get("/getpdf",async(req,res)=>{
         res.status(500).json({error:err.message});
     }
 })
+
+//image gallery part
